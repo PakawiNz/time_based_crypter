@@ -15,20 +15,20 @@ def get_timestamp():
     return int(int(datetime.datetime.now().timestamp()) / int(TIME_OFFSET))
 
 
-def checksum(string_value, as_string=False):
+def checksum(string_value):
     m = hashlib.md5()
     m.update(string_value.encode('utf-8'))
     m.update(CHECKSUM_VERSE.encode('utf-8'))
 
-    result = m.hexdigest()
-    if not as_string:
-        result = result.encode('ascii')
-
-    return result[:CHECKSUM_SIZE]
+    return m.hexdigest()[:CHECKSUM_SIZE]
 
 
 def get_time_based_key(offset=0):
-    return checksum(str(get_timestamp() + offset))
+    m = hashlib.sha256()
+    m.update(str(get_timestamp() + offset).encode('utf-8'))
+    m.update(CHECKSUM_VERSE.encode('utf-8'))
+
+    return m.digest()
 
 
 def get_crypter(offset=0):
